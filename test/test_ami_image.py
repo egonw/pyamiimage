@@ -18,7 +18,7 @@ GRAY2_SNIPPET = Path(RESOURCE_DIR, "snippet_gray2.png")
 
 
 interactive = False
-# interactive = True
+skip_NYI = True # Not Yet Implementd 
 
 
 class TestAmiImage:
@@ -30,7 +30,7 @@ class TestAmiImage:
         # assert RGBA_SNIPPET.exists(), f"image should exist {RGBA_SNIPPET}"
         # self.image = io.imread(RGBA_SNIPPET)
         assert RGB_SNIPPET.exists(), f"image should exist {RGB_SNIPPET}"
-        self.image = io.imread(RGB_SNIPPET)
+        self.rgb_image = io.imread(RGB_SNIPPET)
 
         assert COMPARE_DIR.exists(), "Comparison directory does not exist, run generate_compare_files.py"
     
@@ -41,7 +41,7 @@ class TestAmiImage:
 
     def test_check_image_shape(self):
         """review properties of test images"""
-        assert self.image.shape == (341, 796, 3)  # RGB
+        assert self.rgb_image.shape == (341, 796, 3)  # RGB
 
     def test_check_image_values(self):
         """check the values of imported image against comparison"""
@@ -51,12 +51,12 @@ class TestAmiImage:
         assert compare_filepath.exists(), f"{compare_filename} does not exist, have you run generate_compare_files.py?"
         compare_image = io.imread(compare_filepath)
 
-        assert np.array_equal(self.image, compare_image), f"Image does not match {compare_filename} image"
+        assert np.array_equal(self.rgb_image, compare_image), f"Image does not match {compare_filename} image"
 
     def test_rgb2gray(self):
         """convert raw "gray" image to grayscale"""
         # TODO create pure rgb image
-        gray_image = AmiImage.create_grayscale_from_image(self.image)
+        gray_image = AmiImage.create_grayscale_from_image(self.rgb_image)
 
         compare_filename = "gray.png"
         compare_filepath = Path(COMPARE_DIR, compare_filename)
@@ -67,7 +67,7 @@ class TestAmiImage:
 
     def test_white_binary(self):
         """tests image to white binary image"""
-        white_binary = AmiImage.create_white_binary_from_image(self.image)
+        white_binary = AmiImage.create_white_binary_from_image(self.rgb_image)
 
         compare_filename = "white_binary.png"
         compare_filepath = Path(COMPARE_DIR, compare_filename)
@@ -78,7 +78,7 @@ class TestAmiImage:
 
     def test_inverted(self):
         """tests image to inverted image"""
-        inverted = AmiImage.create_inverted_image(self.image)
+        inverted = AmiImage.create_inverted_image(self.rgb_image)
 
         compare_filename = "inverted.png"
         compare_filepath = Path(COMPARE_DIR, compare_filename)
@@ -89,7 +89,7 @@ class TestAmiImage:
 
     def test_white_skeleton(self):
         """tests image to skeleton image"""
-        inverted = AmiImage.create_inverted_image(self.image)
+        inverted = AmiImage.create_inverted_image(self.rgb_image)
         white_skeleton = AmiImage.create_white_skeleton_from_image(inverted)
 
         compare_filename = "white_skeleton.png"
@@ -99,6 +99,10 @@ class TestAmiImage:
 
         assert np.array_equal(white_skeleton, compare_image), f"Image does not match {compare_filename} image"  
 
+    @unittest.skipIf(skip_NYI, "Not yet implemented")
+    def test_create_octree(self):
+        """tests image to octree"""
+        assert False, "Not yet implemnted"
 
 ### THese functions below are either redundant or bloated we've moved to a newer method for comparing images
 ### Thse functinos will eventually be removed, right now they have been retained incase they have anything useful
